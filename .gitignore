@@ -1,0 +1,6 @@
+*.pth
+*.bin
+*.pkl
+checkpoint/
+outputs/
+embeddings/
