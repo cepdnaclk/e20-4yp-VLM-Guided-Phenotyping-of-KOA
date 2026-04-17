@@ -13,9 +13,9 @@ title:
 
 #### Team
 
-- eNumber, Name, [email](mailto:name@email.com)
-- eNumber, Name, [email](mailto:name@email.com)
-- eNumber, Name, [email](mailto:name@email.com)
+- e2038, Siriwardane I.A.U., [email](e20378@eng.pdn.ac.lk)
+- e20122, Gunathilake N.R.P., [email](e20122@eng.pdn.ac.lk)
+- e20271, Nirmani K.H., [email](e20271@eng.pdn.ac.lk)
 
 #### Supervisors
 
