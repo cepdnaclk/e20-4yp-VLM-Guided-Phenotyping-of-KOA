@@ -11,7 +11,7 @@
             "eNumber": "E/20/271"
         },
         {
-            "name": "Amanda Siriwardhana",
+            "name": "Amanda Siriwardane",
             "email": "e20378@eng.pdn.ac.lk",
             "eNumber": "E/20/378"
         }
@@ -37,5 +37,5 @@
             "url": "#"
         }
     ],
-    "tags": ["Final Year Projects"]
+    "tags": ["Final Year Projects, Vision Language Model, BiomedCLIP, KOA, Explainable AI"]
 }
