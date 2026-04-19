@@ -1,170 +1,1359 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Knee OA Phenotyping | Multimodal VLM Research</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KneeOA-VLM | Multimodal Phenotyping Research</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0e1a;
+  --paper: #f5f2eb;
+  --accent: #c8472b;
+  --accent2: #2b6cb0;
+  --muted: #6b6b6b;
+  --card: #ffffff;
+  --border: #e2ddd5;
+  --green: #1a6b3c;
+  --gold: #b8860b;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(245, 242, 235, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-cta {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.4rem 1.2rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--accent); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding-top: 60px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 40%, rgba(200,71,43,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 70%, rgba(43,108,176,0.05) 0%, transparent 70%);
+}
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 6rem 4rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--accent);
+}
+h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  max-width: 800px;
+  margin-bottom: 2rem;
+}
+h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 3rem;
+  font-weight: 400;
+}
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 3rem;
+}
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+}
+.badge-r { border-color: var(--accent); color: var(--accent); }
+.badge-b { border-color: var(--accent2); color: var(--accent2); }
+.badge-g { border-color: var(--green); color: var(--green); }
+.badge-y { border-color: var(--gold); color: var(--gold); }
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card);
+  width: 100%;
+  max-width: 700px;
+}
+.stat-item {
+  padding: 1.5rem 1.5rem;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.stat-num span { color: var(--accent); font-size: 1.2rem; }
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.35rem;
+  font-weight: 500;
+}
+
+/* ── SECTIONS ── */
+.section { padding: 7rem 4rem; max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+}
+h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+h2 em { font-style: italic; color: var(--accent); }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── THE PROBLEM ── */
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+  margin-top: 3rem;
+}
+.problem-text {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.problem-text strong { color: var(--ink); }
+.kl-table {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.88rem;
+}
+.kl-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.kl-row:last-child { border-bottom: none; }
+.kl-row-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--paper);
+}
+.kl-cell { padding: 0.75rem 1rem; }
+.grade-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+.paradox-box {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(200,71,43,0.06);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+}
+.paradox-box .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.paradox-box p { font-size: 0.92rem; color: var(--ink); line-height: 1.6; }
+
+/* ── PIPELINE ── */
+.pipeline-section { background: var(--ink); color: var(--paper); padding: 6rem 0; }
+.pipeline-inner { max-width: 1100px; margin: 0 auto; padding: 0 4rem; }
+.pipeline-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245,242,235,0.4);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.pipeline-label::before { content: ''; display: block; width: 24px; height: 1px; background: currentColor; }
+.pipeline-inner h2 { color: var(--paper); margin-bottom: 1rem; }
+.pipeline-sub { color: rgba(245,242,235,0.55); font-size: 1rem; max-width: 500px; line-height: 1.7; margin-bottom: 3rem; }
+
+.stages {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  border: 1px solid rgba(245,242,235,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 3rem;
+}
+.stage {
+  padding: 1.5rem 1rem;
+  border-right: 1px solid rgba(245,242,235,0.1);
+  position: relative;
+  transition: background 0.3s;
+  cursor: default;
+}
+.stage:last-child { border-right: none; }
+.stage:hover { background: rgba(245,242,235,0.05); }
+.stage-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+.stage-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--paper);
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+.stage-desc {
+  font-size: 0.72rem;
+  color: rgba(245,242,235,0.45);
+  line-height: 1.5;
+}
+.stage-icon { font-size: 1.4rem; margin-bottom: 0.75rem; }
+
+.pipeline-img-box {
+  border: 1px solid rgba(245,242,235,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.3);
+}
+.pipeline-img-box img { width: 100%; display: block; opacity: 0.9; }
+.pipeline-img-box p {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  color: rgba(245,242,235,0.4);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  border-top: 1px solid rgba(245,242,235,0.08);
+}
+
+/* ── RESULTS ── */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.result-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  background: var(--card);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.result-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.result-card.accent-red { border-top: 3px solid var(--accent); }
+.result-card.accent-blue { border-top: 3px solid var(--accent2); }
+.result-card.accent-green { border-top: 3px solid var(--green); }
+.result-card.accent-gold { border-top: 3px solid var(--gold); }
+.result-card.wide { grid-column: span 2; }
+.result-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.big-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 4rem;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--ink);
+}
+.big-num sup { font-size: 1.5rem; vertical-align: super; color: var(--accent); }
+.result-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.result-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+.finding-list { list-style: none; margin-top: 1.5rem; }
+.finding-list li {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.finding-list li:last-child { border-bottom: none; }
+.finding-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  padding-top: 0.2rem;
+  flex-shrink: 0;
+  letter-spacing: 0.06em;
+}
+
+.silhouette-bars { margin-top: 1.5rem; }
+.bar-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 60px;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+.bar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: right;
+}
+.bar-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.bar-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.results-img-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.img-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card);
+}
+.img-card img { width: 100%; display: block; }
+.img-card p {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.03em;
+  border-top: 1px solid var(--border);
+}
+
+/* ── PHENOTYPES ── */
+.phenotype-section { background: #0f1829; color: var(--paper); padding: 7rem 0; }
+.phenotype-inner { max-width: 1100px; margin: 0 auto; padding: 0 4rem; }
+.phenotype-inner .section-label { color: rgba(245,242,235,0.4); }
+.phenotype-inner h2 { color: var(--paper); }
+.phenotype-sub { color: rgba(245,242,235,0.55); font-size: 1rem; max-width: 480px; line-height: 1.7; margin-bottom: 3rem; }
+
+.pheno-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.pheno-card {
+  border: 1px solid rgba(245,242,235,0.1);
+  border-radius: 8px;
+  padding: 1.75rem;
+  transition: border-color 0.3s, background 0.3s;
+}
+.pheno-card:hover {
+  border-color: rgba(245,242,235,0.25);
+  background: rgba(245,242,235,0.04);
+}
+.pheno-indicator {
+  width: 36px; height: 4px;
+  border-radius: 100px;
+  margin-bottom: 1.25rem;
+}
+.pheno-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  color: var(--paper);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+.pheno-kl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(245,242,235,0.4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.pheno-desc {
+  font-size: 0.88rem;
+  color: rgba(245,242,235,0.55);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+}
+.pheno-stats { display: flex; gap: 1rem; }
+.pheno-stat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(245,242,235,0.15);
+  border-radius: 4px;
+  color: rgba(245,242,235,0.6);
+}
+
+/* ── METHODOLOGY DETAIL ── */
+.method-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-top: 3rem;
+  align-items: start;
+}
+.method-steps { }
+.method-step {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.method-step:last-child { border-bottom: none; }
+.step-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--border);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 40px;
+  text-align: right;
+}
+.step-content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+.step-content p { font-size: 0.87rem; color: var(--muted); line-height: 1.6; }
+.step-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  background: var(--border);
+  border-radius: 3px;
+  color: var(--ink);
+  margin-top: 0.5rem;
+  letter-spacing: 0.04em;
+}
+
+.model-spec {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.spec-header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.spec-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-key {
+  padding: 0.85rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  border-right: 1px solid var(--border);
+  font-weight: 500;
+}
+.spec-val {
+  padding: 0.85rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink);
+}
+.spec-val.highlight { color: var(--accent); font-weight: 600; }
+
+/* ── TEAM ── */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 3rem;
+}
+.team-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.75rem;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.team-photo {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--border);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border: 2px solid var(--border);
+}
+.team-photo img { width: 100%; height: 100%; object-fit: cover; }
+.team-photo-placeholder {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  color: white;
+}
+.team-name { font-size: 1rem; font-weight: 600; color: var(--ink); }
+.team-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+.team-role { font-size: 0.82rem; color: var(--muted); }
+.team-links { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.team-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.team-link:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ── SUPERVISORS ── */
+.supervisors {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.supervisor-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.supervisor-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1rem;
+  color: var(--paper);
+  flex-shrink: 0;
+}
+.supervisor-name { font-size: 0.88rem; font-weight: 600; color: var(--ink); }
+.supervisor-dept { font-size: 0.78rem; color: var(--muted); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink);
+  color: rgba(245,242,235,0.5);
+  padding: 3rem 4rem;
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.footer-brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--paper);
+}
+.footer-brand span { color: var(--accent); }
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a {
+  font-size: 0.8rem;
+  color: rgba(245,242,235,0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+  letter-spacing: 0.04em;
+}
+.footer-links a:hover { color: var(--paper); }
+.footer-copy { font-size: 0.78rem; letter-spacing: 0.03em; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-up {
+  animation: fadeUp 0.7s ease both;
+}
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hero-inner { padding: 4rem 1.5rem 2rem; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
+  .section { padding: 4rem 1.5rem; }
+  .problem-grid, .results-grid, .method-grid, .team-grid { grid-template-columns: 1fr; }
+  .result-card.wide { grid-column: span 1; }
+  .pheno-grid { grid-template-columns: 1fr; }
+  .stages { grid-template-columns: repeat(2, 1fr); }
+  .results-img-row { grid-template-columns: 1fr; }
+  .supervisors { grid-template-columns: 1fr; }
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  footer { padding: 2rem 1.5rem; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .pipeline-inner, .phenotype-inner { padding: 0 1.5rem; }
+}
+</style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body>
 
-    <nav class="fixed top-0 w-full z-50 glass border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <span class="font-bold text-blue-600 tracking-tight text-xl">KneeOA-VLM</span>
-            <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-                <a href="#abstract" class="hover:text-blue-600 transition">Abstract</a>
-                <a href="#methodology" class="hover:text-blue-600 transition">Methodology</a>
-                <a href="#results" class="hover:text-blue-600 transition">Results</a>
-                <a href="#team" class="hover:text-blue-600 transition">Team</a>
-            </div>
-            <a href="https://github.com/cepdnaclk/{{ page.repository-name }}" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-slate-800 transition">
-                <i class="fab fa-github mr-2"></i>Code
-            </a>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">KneeOA<span>·</span>VLM</div>
+  <div class="nav-links">
+    <a href="#problem">The Problem</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#results">Results</a>
+    <a href="#phenotypes">Phenotypes</a>
+    <a href="#team">Team</a>
+  </div>
+  <a href="https://github.com/cepdnaclk/e20-4yp-VLM-Guided-Phenotyping-of-KOA" class="nav-cta">↗ GitHub</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow animate-up">Final Year Project · University of Peradeniya · 2025</p>
+    <h1 class="animate-up delay-1">
+      Discovering <em>hidden subtypes</em> of Knee Osteoarthritis using AI
+    </h1>
+    <p class="hero-sub animate-up delay-2">
+      We fine-tuned a Vision-Language Model on 8,945 knee X-rays and found that 
+      patients with the same diagnosis can have fundamentally different disease — 
+      with different progression rates and different treatment needs.
+    </p>
+    <div class="hero-badges animate-up delay-3">
+      <span class="badge badge-r">BiomedCLIP</span>
+      <span class="badge badge-b">HDBSCAN Clustering</span>
+      <span class="badge badge-g">OAI Dataset</span>
+      <span class="badge badge-y">10-Year Follow-up</span>
+      <span class="badge badge-r">Explainable AI</span>
+    </div>
+    <div class="hero-stats animate-up delay-4">
+      <div class="stat-item">
+        <div class="stat-num">4,502<span></span></div>
+        <div class="stat-label">DICOM X-rays</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">8,945<span></span></div>
+        <div class="stat-label">Knee images</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0.841<span></span></div>
+        <div class="stat-label">Best silhouette</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2<span>×</span></div>
+        <div class="stat-label">Faster progression</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="divider"></div>
+
+<!-- THE PROBLEM -->
+<section id="problem" class="section">
+  <p class="section-label">01 — Background</p>
+  <h2>Why standard grading <em>isn't enough</em></h2>
+  <div class="problem-grid reveal">
+    <div>
+      <p class="problem-text">
+        Doctors currently grade knee osteoarthritis on a scale of 0 to 4 — the 
+        <strong>Kellgren-Lawrence (KL) system</strong> — based on what bone damage looks like 
+        on an X-ray. But this creates a deep problem: two patients with <strong>the same grade 
+        can feel completely different</strong>.
+      </p>
+      <br>
+      <p class="problem-text">
+        One patient with KL Grade 2 might have severe pain and rapid deterioration. 
+        Another with the same grade feels fine and stays stable for years. 
+        Current AI models are trained to <strong>reproduce this grading</strong>, meaning they're 
+        stuck in the same blind spot.
+      </p>
+      <div class="paradox-box">
+        <div class="label">⚠ The Discordance Paradox</div>
+        <p>A patient can have a "Mild" X-ray but severe pain — or a "Severe" X-ray and no pain at all. This isn't noise; it's a signal that OA has multiple biological subtypes that one number cannot capture.</p>
+      </div>
+    </div>
+    <div>
+      <div class="kl-table">
+        <div class="kl-row kl-row-head">
+          <div class="kl-cell">Grade</div>
+          <div class="kl-cell">What it means</div>
+          <div class="kl-cell">X-ray signs</div>
         </div>
-    </nav>
-
-    <header class="hero-gradient text-white pt-32 pb-20 px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-                Multimodal Phenotyping in Knee Osteoarthritis Using Vision-Language Models
-            </h1>
-            <p class="text-xl text-slate-300 mb-10 leading-relaxed">
-                Discovering biological subtypes through fine-tuned BiomedCLIP and longitudinal data analysis.
-            </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <span class="bg-blue-500/20 text-blue-300 px-4 py-1 rounded-full border border-blue-500/30 text-sm font-semibold">Vision-Language Models</span>
-                <span class="bg-emerald-500/20 text-emerald-300 px-4 py-1 rounded-full border border-emerald-500/30 text-sm font-semibold">BiomedCLIP</span>
-                <span class="bg-purple-500/20 text-purple-300 px-4 py-1 rounded-full border border-purple-500/30 text-sm font-semibold">Phenotyping</span>
-            </div>
+        <div class="kl-row">
+          <div class="kl-cell"><span class="grade-dot" style="background:#22c55e"></span>0</div>
+          <div class="kl-cell">Healthy</div>
+          <div class="kl-cell">None</div>
         </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto px-6 py-20 space-y-32">
-
-        <section id="abstract" class="grid md:grid-cols-3 gap-12 items-start">
-            <div class="md:col-span-1">
-                <h2 class="text-3xl font-bold border-l-4 border-blue-600 pl-4">Abstract</h2>
-            </div>
-            <div class="md:col-span-2 text-lg text-slate-600 leading-relaxed">
-                <p>
-                    Standard Knee Osteoarthritis (OA) grading often fails to capture the mismatch between structural damage and patient pain. 
-                    Our research introduces a pipeline that leverages <strong>BiomedCLIP</strong> to extract 512-dimensional embeddings from 4,502 X-rays. 
-                    By fusing these with clinical data (Pain, BMI, Age) and using <strong>HDBSCAN clustering</strong>, we identified distinct phenotypes. 
-                    Our findings reveal that certain phenotypes, like <em>Lateral JSN</em>, progress <strong>twice as fast</strong> as others over a 10-year period.
-                </p>
-            </div>
-        </section>
-
-        <section class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
-            <div class="p-8 text-center">
-                <h3 class="text-2xl font-bold mb-4">Project Walkthrough</h3>
-                <div class="aspect-video bg-slate-100 rounded-xl overflow-hidden">
-                    <video controls class="w-full h-full">
-                        <source src="./images/walkthrough.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-        </section>
-
-        <section id="methodology">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold mb-4">Research Methodology</h2>
-                <div class="h-1 w-20 bg-blue-600 mx-auto"></div>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-8 text-center">
-                <div class="p-8 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
-                    <div class="text-blue-600 text-4xl mb-4"><i class="fas fa-scissors"></i></div>
-                    <h4 class="font-bold text-xl mb-2">YOLO Preprocessing</h4>
-                    <p class="text-slate-500 text-sm leading-relaxed">Automated cropping of bilateral X-rays into individual knee regions to isolate joint space.</p>
-                </div>
-                <div class="p-8 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
-                    <div class="text-indigo-600 text-4xl mb-4"><i class="fas fa-microchip"></i></div>
-                    <h4 class="font-bold text-xl mb-2">BiomedCLIP Encoder</h4>
-                    <p class="text-slate-500 text-sm leading-relaxed">Fine-tuned on KL grade regression to ensure visual attention focuses on osteophytes and JSN.</p>
-                </div>
-                <div class="p-8 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
-                    <div class="text-emerald-600 text-4xl mb-4"><i class="fas fa-project-diagram"></i></div>
-                    <h4 class="font-bold text-xl mb-2">Late Fusion</h4>
-                    <p class="text-slate-500 text-sm leading-relaxed">Fusing 512-D visual vectors with 5 clinical features for HDBSCAN clustering.</p>
-                </div>
-            </div>
-            
-            <div class="mt-16 bg-slate-900 rounded-2xl p-4 shadow-2xl">
-                <img src="./images/pipeline.png" alt="Methodology Diagram" class="w-full rounded-lg opacity-90">
-                <p class="text-slate-400 text-center text-xs mt-4 italic">Full architecture of the multimodal phenotyping pipeline.</p>
-            </div>
-        </section>
-
-        <section id="results" class="space-y-12">
-            <h2 class="text-3xl font-bold text-center">Key Results</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-blue-600 text-white p-10 rounded-3xl flex flex-col justify-center">
-                    <h3 class="text-5xl font-extrabold mb-2">86.4%</h3>
-                    <p class="text-blue-100 text-xl font-medium mb-6">Model Accuracy</p>
-                    <p class="text-blue-50 text-sm opacity-80 leading-relaxed">
-                        The fine-tuned BiomedCLIP achieved a Mean Absolute Error of 0.865 KL grade units, significantly outperforming zero-shot baselines.
-                    </p>
-                </div>
-                <div class="bg-slate-800 text-white p-10 rounded-3xl">
-                    <h3 class="text-3xl font-bold mb-4 text-emerald-400">Progression Analysis</h3>
-                    <ul class="space-y-4 text-slate-300">
-                        <li class="flex items-start">
-                            <i class="fas fa-check-circle mt-1 mr-3 text-emerald-400"></i>
-                            <span>Lateral JSN phenotype progresses <strong>2x faster</strong> than Medial.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check-circle mt-1 mr-3 text-emerald-400"></i>
-                            <span>Identified unique "Pain-Dominant" clusters within KL Grade 2.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check-circle mt-1 mr-3 text-emerald-400"></i>
-                            <span>XAI validation confirmed focus on joint space and condyles.</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="team">
-            <h2 class="text-3xl font-bold text-center mb-16">Meet the Researchers</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="text-center group">
-                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-4 ring-4 ring-slate-100 group-hover:ring-blue-100 transition">
-                        <img src="./images/e20378.jpg" alt="Amanda" class="w-full h-full object-cover">
-                    </div>
-                    <h4 class="font-bold text-lg">Amanda Siriwardane</h4>
-                    <p class="text-slate-500 text-sm mb-3 font-medium">E/20/378</p>
-                    <div class="flex justify-center space-x-3 text-slate-400">
-                        <a href="https://github.com/amandasiriwardane" class="hover:text-slate-900"><i class="fab fa-github"></i></a>
-                        <a href="mailto:e20378@eng.pdn.ac.lk" class="hover:text-blue-600"><i class="fas fa-envelope"></i></a>
-                    </div>
-                </div>
-                </div>
-        </section>
-
-    </main>
-
-    <footer class="bg-white border-t border-slate-200 py-16 px-6">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-sm text-slate-500">
-            <div class="text-center md:text-left">
-                <p class="font-bold text-slate-900">Department of Computer Engineering</p>
-                <p>Faculty of Engineering, University of Peradeniya</p>
-            </div>
-            <div class="flex gap-8">
-                <a href="http://www.ce.pdn.ac.lk/" class="hover:text-blue-600">Department Site</a>
-                <a href="https://eng.pdn.ac.lk/" class="hover:text-blue-600">Faculty Site</a>
-            </div>
+        <div class="kl-row">
+          <div class="kl-cell"><span class="grade-dot" style="background:#a3e635"></span>1</div>
+          <div class="kl-cell">Doubtful</div>
+          <div class="kl-cell">Possible bone spurs</div>
         </div>
-    </footer>
+        <div class="kl-row">
+          <div class="kl-cell"><span class="grade-dot" style="background:#facc15"></span>2</div>
+          <div class="kl-cell">Mild</div>
+          <div class="kl-cell">Definite bone spurs</div>
+        </div>
+        <div class="kl-row">
+          <div class="kl-cell"><span class="grade-dot" style="background:#f97316"></span>3</div>
+          <div class="kl-cell">Moderate</div>
+          <div class="kl-cell">Joint space narrowing</div>
+        </div>
+        <div class="kl-row">
+          <div class="kl-cell"><span class="grade-dot" style="background:#ef4444"></span>4</div>
+          <div class="kl-cell">Severe</div>
+          <div class="kl-cell">Bone-on-bone contact</div>
+        </div>
+      </div>
+      <br>
+      <p class="problem-text" style="font-size:0.85rem;">
+        Our approach doesn't replace this system — it <strong>looks deeper inside each grade</strong> 
+        to find biologically distinct patient subgroups (phenotypes) using a Vision-Language 
+        Model trained on medical images.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PIPELINE -->
+<section class="pipeline-section" id="pipeline">
+  <div class="pipeline-inner">
+    <p class="pipeline-label">02 — How It Works</p>
+    <h2>A 7-stage AI pipeline</h2>
+    <p class="pipeline-sub">From raw hospital X-rays to clinically validated patient phenotypes with 10-year longitudinal confirmation.</p>
+
+    <div class="stages reveal">
+      <div class="stage">
+        <div class="stage-num">01</div>
+        <div class="stage-icon">🗂️</div>
+        <div class="stage-title">DICOM Preprocessing</div>
+        <div class="stage-desc">4,502 bilateral X-rays downloaded from OAI. YOLO crops left & right knees separately.</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">02</div>
+        <div class="stage-icon">🔬</div>
+        <div class="stage-title">Zero-Shot Embedding</div>
+        <div class="stage-desc">BiomedCLIP extracts 512-dimensional vectors from each knee. Tested as baseline — produced 55 fragmented clusters.</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">03</div>
+        <div class="stage-icon">🎯</div>
+        <div class="stage-title">Fine-Tuning</div>
+        <div class="stage-desc">KL-grade regression trains the upper 6 transformer blocks. MAE drops to 0.865 grade units.</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">04</div>
+        <div class="stage-icon">🔗</div>
+        <div class="stage-title">Multimodal Fusion</div>
+        <div class="stage-desc">Visual embeddings fused with pain scores, JSN, osteophytes, age & BMI. UMAP reduces to 2D.</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">05</div>
+        <div class="stage-icon">🧬</div>
+        <div class="stage-title">HDBSCAN Clustering</div>
+        <div class="stage-desc">Clusters independently within each KL grade. Finds phenotypes that aren't just severity differences.</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">06</div>
+        <div class="stage-icon">👁️</div>
+        <div class="stage-title">XAI Validation</div>
+        <div class="stage-desc">CLS-token attention maps confirm the model looks at the joint space — not image borders.</div>
+      </div>
+      <div class="stage">
+        <div class="stage-num">07</div>
+        <div class="stage-icon">📈</div>
+        <div class="stage-title">Longitudinal Check</div>
+        <div class="stage-desc">OAI follow-ups (V00–V10) confirm clusters predict real disease progression over 10 years.</div>
+      </div>
+    </div>
+
+    <div class="pipeline-img-box reveal">
+      <img src="./images/pipeline.png" alt="Full pipeline diagram">
+      <p>Fig. 1 — Full seven-stage architecture · BiomedCLIP fine-tuning · HDBSCAN within-grade clustering</p>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="section">
+  <p class="section-label">03 — What We Found</p>
+  <h2>Results that <em>matter clinically</em></h2>
+
+  <div class="results-grid">
+
+    <div class="result-card accent-red reveal">
+      <div class="result-eyebrow">Fine-Tuning Performance</div>
+      <div class="big-num">86.4<sup>%</sup></div>
+      <div class="result-label">Within-1 Grade Accuracy</div>
+      <div class="result-desc">The model predicts KL severity within one grade step 86.4% of the time. MAE = 0.865 grade units. Exact match = 31.0% — comparable to inter-rater radiologist agreement.</div>
+    </div>
+
+    <div class="result-card accent-blue reveal">
+      <div class="result-eyebrow">Clustering Quality — Silhouette Scores</div>
+      <div class="silhouette-bars">
+        <div class="bar-row">
+          <div class="bar-label">KL 1</div>
+          <div class="bar-track"><div class="bar-fill" style="width: 78.9%"></div></div>
+          <div class="bar-val">0.789</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">KL 2</div>
+          <div class="bar-track"><div class="bar-fill" style="width: 78.3%"></div></div>
+          <div class="bar-val">0.783</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">KL 3</div>
+          <div class="bar-track"><div class="bar-fill" style="width: 78.1%"></div></div>
+          <div class="bar-val">0.781</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">KL 4</div>
+          <div class="bar-track"><div class="bar-fill" style="width: 84.1%"></div></div>
+          <div class="bar-val">0.841</div>
+        </div>
+      </div>
+      <div class="result-desc" style="margin-top:1rem;">All scores above 0.5 — considered "strong" cluster separation. Scores above 0.3 are adequate for biological discovery.</div>
+    </div>
+
+    <div class="result-card accent-gold wide reveal">
+      <div class="result-eyebrow">Key Clinical Findings</div>
+      <ul class="finding-list">
+        <li>
+          <span class="finding-num">F.01</span>
+          <span><strong>Lateral JSN progresses 2× faster than Medial JSN</strong> over 10 years (p &lt; 0.0001, Bonferroni-corrected). This is the headline result — same KL grade at baseline, completely different long-term outcome.</span>
+        </li>
+        <li>
+          <span class="finding-num">F.02</span>
+          <span><strong>Pain-susceptibility phenotype discovered in KL Grade 0</strong>: a cluster of 1,219 patients with elevated pain (WOMAC = 4.7) and zero structural damage. These patients are currently invisible to radiographic grading.</span>
+        </li>
+        <li>
+          <span class="finding-num">F.03</span>
+          <span><strong>Lateral JSN cluster stability = 97.2%</strong> and Medial JSN stability = 95.0% over 8 years — confirming these are genuine biological phenotypes, not statistical noise.</span>
+        </li>
+        <li>
+          <span class="finding-num">F.04</span>
+          <span><strong>50% of Lateral JSN patients progressed ≥1 KL grade by 8 years</strong>, vs 25.8% Medial, 22.1% No JSN, 19.6% Pain-Dominant, 16.7% Healthy — enabling early risk stratification.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="result-card accent-green reveal">
+      <div class="result-eyebrow">XAI — Where the model looks</div>
+      <div class="result-label">CLS-Token Attention Validation</div>
+      <div class="result-desc">After fine-tuning, CLS-token attention maps show the model consistently focuses on the joint space line, femoral condyles, and tibial plateau — the exact anatomical regions relevant to JSN and osteophyte grading. Zero-shot BiomedCLIP instead focused on image borders and ruler strips.</div>
+      <div class="results-img-row" style="grid-template-columns:1fr;margin-top:1rem;">
+        <div class="img-card">
+          <img src="./images/KL0_phenotype_comparison.png" alt="XAI KL0 phenotype comparison">
+          <p>KL Grade 0 — CLS attention · Cluster 0 (pain=4.7) vs Cluster 1 (pain=0.2)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card accent-blue reveal">
+      <div class="result-eyebrow">10-Year Longitudinal Progression</div>
+      <div class="result-label">KL Grade Change from Baseline</div>
+      <div class="result-desc" style="margin-bottom:1rem;">The Lateral JSN phenotype accumulates a mean ΔKL of 0.75 by V120 — nearly double the Medial JSN group (0.41) and nearly triple the Healthy group (0.28).</div>
+      <div class="img-card">
+        <img src="./images/kl_trajectory_by_cluster.png" alt="KL Grade progression">
+        <p>Fig. — KL grade trajectories across 5 phenotypes · V00 to V120 (10 years)</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PHENOTYPES -->
+<section class="phenotype-section" id="phenotypes">
+  <div class="phenotype-inner">
+    <p class="section-label">04 — Discovered Phenotypes</p>
+    <h2>Five distinct <em>patient subtypes</em></h2>
+    <p class="phenotype-sub">These are the clinically meaningful groups our framework discovered — each requiring a different treatment strategy.</p>
+
+    <div class="pheno-grid reveal">
+      <div class="pheno-card">
+        <div class="pheno-indicator" style="background:#ef4444"></div>
+        <div class="pheno-name">Lateral JSN</div>
+        <div class="pheno-kl">KL Grades 1–4 · n = 671</div>
+        <div class="pheno-desc">Dominant narrowing of the lateral compartment. Fastest-progressing phenotype — 50% advance ≥1 KL grade within 8 years. Likely benefits from lateral unloading bracing.</div>
+        <div class="pheno-stats">
+          <span class="pheno-stat">jsn_lat ≈ 1.0</span>
+          <span class="pheno-stat">50.0% ≥1 grade/8yr</span>
+        </div>
+      </div>
+      <div class="pheno-card">
+        <div class="pheno-indicator" style="background:#3b82f6"></div>
+        <div class="pheno-name">Medial JSN</div>
+        <div class="pheno-kl">KL Grades 1–4 · n = 3,082</div>
+        <div class="pheno-desc">Dominant narrowing of the medial compartment. Most common phenotype. Moderate progression rate. At KL 4, shows slightly higher pain than Lateral group (2.07 vs 1.69).</div>
+        <div class="pheno-stats">
+          <span class="pheno-stat">jsn_med ≈ 1.0</span>
+          <span class="pheno-stat">25.8% ≥1 grade/8yr</span>
+        </div>
+      </div>
+      <div class="pheno-card">
+        <div class="pheno-indicator" style="background:#22c55e"></div>
+        <div class="pheno-name">No JSN</div>
+        <div class="pheno-kl">KL Grades 1–2 · n = 1,780</div>
+        <div class="pheno-desc">Osteophyte-dominant involvement with minimal joint space narrowing. Structurally present but without compartment-specific damage pattern.</div>
+        <div class="pheno-stats">
+          <span class="pheno-stat">jsn ≈ 0</span>
+          <span class="pheno-stat">22.1% ≥1 grade/8yr</span>
+        </div>
+      </div>
+      <div class="pheno-card">
+        <div class="pheno-indicator" style="background:#f59e0b"></div>
+        <div class="pheno-name">Pain-Dominant</div>
+        <div class="pheno-kl">KL Grade 0 · n = 1,219</div>
+        <div class="pheno-desc">High pain (WOMAC = 4.7) with zero structural damage on X-ray. Classic discordance paradox. Represents neurobiological pain susceptibility — completely invisible to standard KL grading.</div>
+        <div class="pheno-stats">
+          <span class="pheno-stat">pain = 4.7</span>
+          <span class="pheno-stat">jsn = 0</span>
+        </div>
+      </div>
+      <div class="pheno-card">
+        <div class="pheno-indicator" style="background:#8b5cf6"></div>
+        <div class="pheno-name">Healthy</div>
+        <div class="pheno-kl">KL Grade 0 · n = 2,193</div>
+        <div class="pheno-desc">No structural damage and low pain (WOMAC = 0.2). Slowest progression. Serves as the true baseline comparator across all longitudinal analyses.</div>
+        <div class="pheno-stats">
+          <span class="pheno-stat">pain = 0.2</span>
+          <span class="pheno-stat">16.7% ≥1 grade/8yr</span>
+        </div>
+      </div>
+      <div class="pheno-card" style="border: 1px dashed rgba(245,242,235,0.15); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:2rem;">
+        <div style="font-size:2rem;margin-bottom:1rem;">🔬</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:rgba(245,242,235,0.5);margin-bottom:0.5rem;">Clinical Implication</div>
+        <div style="font-size:0.85rem;color:rgba(245,242,235,0.35);line-height:1.65;">Instead of treating all KL 2 patients identically, physicians can now stratify by compartment phenotype and prescribe targeted interventions — valgus/varus bracing, anti-inflammatories, or pain management protocols.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY DETAIL -->
+<section class="section" id="methodology">
+  <p class="section-label">05 — Technical Details</p>
+  <h2>Model architecture <em>&amp; training</em></h2>
+  <div class="method-grid reveal">
+    <div class="method-steps">
+      <div class="method-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>BiomedCLIP as the backbone</h4>
+          <p>Pre-trained on 15 million PubMed figure-caption pairs using InfoNCE contrastive loss. Its ViT vision encoder maps images to 512-dimensional vectors in a shared image-text embedding space.</p>
+          <span class="step-tag">microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224</span>
+        </div>
+      </div>
+      <div class="method-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Selective layer freezing</h4>
+          <p>Transformer blocks 0–5, patch embed, positional embed, and CLS token are frozen (152.9M params). Only blocks 6–11 and the regression head are trained (42.9M params, 21.9% of model).</p>
+          <span class="step-tag">Prevents catastrophic forgetting</span>
+        </div>
+      </div>
+      <div class="method-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Regression, not classification</h4>
+          <p>MSE loss with sigmoid activation scaled to [0,4]. Regression imposes ordinal structure — KL grades are treated as continuous, not discrete classes. This avoids hard decision boundaries that reproduce existing bias.</p>
+          <span class="step-tag">AdamW · lr=5e-4 · cosine annealing</span>
+        </div>
+      </div>
+      <div class="method-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Within-grade HDBSCAN clustering</h4>
+          <p>Clustering independently inside each KL grade ensures discovered clusters represent phenotypic variation — not severity differences that are already known. Noise points are rejected rather than forced into clusters.</p>
+          <span class="step-tag">min_cluster_size tuned per grade</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="model-spec">
+        <div class="spec-header">Model Configuration</div>
+        <div class="spec-row">
+          <div class="spec-key">Base model</div>
+          <div class="spec-val">BiomedCLIP ViT-B/16</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Total parameters</div>
+          <div class="spec-val">195.9M</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Trainable params</div>
+          <div class="spec-val highlight">42.9M (21.9%)</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Embedding dimension</div>
+          <div class="spec-val">512-D</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Training loss</div>
+          <div class="spec-val">MSE + Ranking</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Best epoch</div>
+          <div class="spec-val highlight">21 / 30</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Val MAE</div>
+          <div class="spec-val highlight">0.865 KL units</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Val RMSE</div>
+          <div class="spec-val">1.055</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Within-1 accuracy</div>
+          <div class="spec-val highlight">86.4%</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Dataset</div>
+          <div class="spec-val">OAI V00 (8,945 knees)</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">UMAP n_neighbors</div>
+          <div class="spec-val">15</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">UMAP min_dist</div>
+          <div class="spec-val">0.1</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Clustering algorithm</div>
+          <div class="spec-val">HDBSCAN (per grade)</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">XAI method</div>
+          <div class="spec-val">CLS-token attention</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TEAM -->
+<section id="team" class="section">
+  <p class="section-label">06 — Research Team</p>
+  <h2>The people <em>behind this work</em></h2>
+
+  <div class="team-grid reveal">
+    <div class="team-card">
+      <div class="team-photo-placeholder">A</div>
+      <div class="team-name">I.A.U. Siriwardane</div>
+      <div class="team-id">E/20/378</div>
+      <div class="team-role">Computer Engineering · University of Peradeniya</div>
+      <div class="team-links">
+        <a href="https://github.com/amandasiriwardane" class="team-link">GitHub</a>
+        <a href="mailto:e20378@eng.pdn.ac.lk" class="team-link">Email</a>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-photo-placeholder">H</div>
+      <div class="team-name">K.G.H. Nirmani</div>
+      <div class="team-id">E/20/271</div>
+      <div class="team-role">Computer Engineering · University of Peradeniya</div>
+      <div class="team-links">
+        <a href="mailto:e20271@eng.pdn.ac.lk" class="team-link">Email</a>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-photo-placeholder">N</div>
+      <div class="team-name">N.R.P. Gunathilake</div>
+      <div class="team-id">E/20/122</div>
+      <div class="team-role">Computer Engineering · University of Peradeniya</div>
+      <div class="team-links">
+        <a href="mailto:e20122@eng.pdn.ac.lk" class="team-link">Email</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <p class="section-label" style="margin-bottom:1rem;">Supervisors</p>
+    <div class="supervisors reveal">
+      <div class="supervisor-card">
+        <div class="supervisor-icon">YV</div>
+        <div>
+          <div class="supervisor-name">Ms. Yasodha Vimukthi</div>
+          <div class="supervisor-dept">Dept. of Computer Engineering · Faculty of Engineering</div>
+        </div>
+      </div>
+      <div class="supervisor-card">
+        <div class="supervisor-icon">DH</div>
+        <div>
+          <div class="supervisor-name">Dr. Damayanthi Herath</div>
+          <div class="supervisor-dept">Dept. of Computer Engineering · Faculty of Engineering</div>
+        </div>
+      </div>
+      <div class="supervisor-card">
+        <div class="supervisor-icon">MR</div>
+        <div>
+          <div class="supervisor-name">Mr. A.M. Mohamed Rikas</div>
+          <div class="supervisor-dept">Dept. of Physiotherapy · Faculty of Allied Health Sciences</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">KneeOA<span>·</span>VLM</div>
+      <div style="font-size:0.78rem;margin-top:0.35rem;color:rgba(245,242,235,0.3);">
+        Department of Computer Engineering · University of Peradeniya · Sri Lanka
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="http://www.ce.pdn.ac.lk/">Department</a>
+      <a href="https://eng.pdn.ac.lk/">Faculty</a>
+      <a href="https://github.com/cepdnaclk/e20-4yp-VLM-Guided-Phenotyping-of-KOA">GitHub</a>
+    </div>
+    <div class="footer-copy">FYP · 2025</div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Animate bars on scroll
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => { bar.style.width = w; }, 100);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.silhouette-bars').forEach(el => barObserver.observe(el));
+</script>
 
 </body>
 </html>
